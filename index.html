@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Heatmap3D热力图</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.jpg" />
+    <link rel="stylesheet" href="../../../cesium/libs/Cesium-1.98/Build/Cesium/Widgets/widgets.css">
+    <script type="text/javascript" src="../../../cesium/libs/Cesium-1.98/Build/Cesium/Cesium.js"></script>
+    <script src="HeatMap3D.js"></script>
+    <style>
+        html,
+        body,
+        #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="cesiumContainer"></div>
+</body>
+<script>
+    const opts = {};
+    const args = [
+        "geocoder",
+        "homeButton",
+        "sceneModePicker",
+        "baseLayerPicker",
+        "navigationHelpButton",
+        "animation",
+        "shouldAnimate",
+        "timeline",
+        "fullscreenButton",
+        "vrButton",
+        "infoBox",
+        "selectionIndicator",
+    ];
+    for (let i = 0; i < args.length; i++) {
+        if (!opts[args[i]]) {
+            opts[args[i]] = false;
+        }
+    }
+    opts.creditContainer = document.createElement("div");
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+        ...opts,
+        //这句很重要
+         contextOptions: {
+                requestWebgl2: true,
+                msaa: true,
+                multisampleNum: 8,
+            }
+    });
+
+    viewer.camera.flyTo({
+        destination: new Cesium.Cartesian3(-2781022.238205981, 4831350.90118472, 3178397.0879110717),
+        orientation: {
+            heading: 0.09545131503544901,
+            pitch: -0.7670453352947222,
+            roll: 0.00038362839268746285
+        }
+    });
+    const heatMap = new HeatMap3D(viewer);
+    let url = 'random.json';
+    url = 'normal.json';
+    fetch(url).then(res=>res.json()).then(data=>{
+        console.log(data);
+        heatMap.loadGeoJsonData(data);
+    })
+
+
+    setTimeout(() => {
+        heatMap.remove();
+    }, 3*60*1000);
+    // heatMap.loadGeoJsonData(url);
+
+    
+</script>
+
+</html>
